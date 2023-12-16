@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 import os
+import managment
 
 
 def encrypt(key):
@@ -23,26 +24,21 @@ def decrypt(key):
     with open(file_path, "wb") as file:
         file.write(decrypted_data)
     print(f"Plik {file_path} zostal rozszyfrowany.")
-
-
-def generate_key():
-    key = Fernet.generate_key()
-    key_path = input("Proszę wprowadzić lokalizacje zapisu klucza (wraz z nazwą klucza np. klucz_bezpieczenstwa.key)") 
-
-    os.makedirs(os.path.dirname(key_path), exist_ok=True)
-
-    key = Fernet.generate_key()
-    with open(key_path, "wb") as key_file:
-        key_file.write(key)
-    return key
-
-def load_key():
-    key_path = input("Proszę wprowadzić lokalizacje wczytania klucza (wraz z nazwą klucza np. klucz_bezpieczenstwa.key)")
-    with open(key_path, "rb") as key_file:
-        return key_file.read()
     
 generate_key_decision = input("Czy chcesz wygenerować nowy klucz? (tak/nie): ")
 if generate_key_decision.lower() == 'tak':
-    generate_key()
+    key = managment.generate_key()
+else:
+    key = managment.load_key()
 
-key = load_key()
+# Użytkownik
+print("1: Szyfrowanie pliku")
+print("2: Rozszyfrowanie pliku")
+choice = input("Wybierz opcje: ")
+
+if choice == '1':
+    encrypt(key)
+elif choice == '2':
+    decrypt(key)
+else:
+    print("Nie ma takiej opcji")

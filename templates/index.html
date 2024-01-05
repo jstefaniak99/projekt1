@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bezpieczne trzymanie plików</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Ładowanie arkusza stylów CSS -->
+</head>
+<body>
+    <div class="container">
+        
+        <h2>Projekt</h2>
+
+<!-- Formularz do szyfrowania plików -->
+
+
+        <h2>Szyfrowanie</h2>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="encrypt">
+            <h3>Klucz</h3>
+            <input type="file" name="key_file" required>
+            <h3>Plik do zaszyfrowania</h3>
+            <input type="file" name="file" required> <!-- wybór pliku do zaszyfrowania -->
+            <button type="submit">Szyfruj plik</button>
+        </form>
+
+<!-- Formularz do deszyfrowania plików -->
+
+        <h2>Deszyfrowanie</h2>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="decrypt">
+            <h3>Klucz</h3>
+            <input type="file" name="key_file" required>
+            <h3>Plik do deszyfrowania</h3>
+            <input type="file" name="file" required> <!-- wybór pliku do deszyfrowania -->
+            <button type="submit">Deszyfruj plik</button>
+        </form>
+
+<!-- Formularz do generowania klucza -->
+
+        <h2>Generowanie</h2>
+        <form action="/" method="post">
+            <input type="hidden" name="operation" value="generate">
+            <h3>Wpisz klucz</h3>
+            <input type="text" name="key_string" placeholder="Wpisz klucz" required>
+            <h3>Podaj ścieżkę zapisu klucza</h3>
+            <input type="text" name="key_path" placeholder="klucz.txt">
+            <button type="submit">Generuj klucz</button>
+        </form>
+
+    </div>
+</body>
+</html>

@@ -4,62 +4,75 @@ from flask import Flask, render_template, request, send_file, jsonify
 
 app = Flask(__name__)
 
-def xor_encrypt_decrypt(data, key):
-    key_bytes = key.encode()
-    encrypted_data = bytearray()
+
+#Funkcja do wykonania operacji XOR na danych przy użyciu klucza
+def xor_operation(data, key):
+    result_data = bytearray()
     for i in range(len(data)):
         data_byte = data[i]
-        key_byte = key_bytes[i % len(key_bytes)]
-        encrypted_data.append(data_byte ^ key_byte)
-    return bytes(encrypted_data)
+        key_byte = key[i % len(key)]
+        result_data.append(data_byte ^ key_byte)
+    return bytes(result_data)
 
+# Wszystko wykonywane w domyślej ścieżce
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        print("Form data:", request.form)    # Debugowanie
-        print("Files data:", request.files)  
-        
-        key_path = request.form.get('key_path')
-        file = request.files.get('file')
-        file = request.files['file'].filename
-        print(key_path, file)
-
-        if not key_path or not file:
-            return "Klucz jest wymagany", 400
-        
-        try:
-            with open(key_path, 'rb') as key_file:
-                key_data = key_file.read()
-        except IOError:
-            return "Nie można odczytać klucza", 400
-        
         operation = request.form.get('operation')
 
-        if 'file' not in request.files or request.files['file'].filename == '':
-            return "Plik jest wymagany", 400
+        if operation == 'generate':
+            key_string = request.form.get('key_string')
+            if not key_string:
+                return jsonify({"error": "Wymagany jest ciąg klucza"}), 400
 
-        uploaded_file = request.files['file']
+            key_path = request.form.get('key_path', 'klucz.txt')
+            if not key_path.endswith('.txt'):
+                key_path += '.txt'
 
-        try:
-            if operation == 'encrypt':
-                processed_data = xor_encrypt_decrypt(uploaded_file.read(), file)
-                filename = 'encrypted_file'
-            elif operation == 'decrypt':
-                processed_data = xor_encrypt_decrypt(uploaded_file.read(), file)
-                filename = 'decrypted_file'
-            else:
-                return "Niepoprawna operacja", 400
+            # Zapisz plik jako
+            with open(key_path, "w") as key_file:
+                key_file.write(key_string)
 
-            return send_file(
-                io.BytesIO(processed_data),
-                download_name=file,
-                as_attachment=True
-            )
-        except Exception as e:
-            print("Błąd:", str(e))  # Debugowanie
-            return jsonify({"error": str(e)}), 500
+            return jsonify({"message": "Klucz wygenerowany", "key_path": key_path})
+
+        elif operation == 'load':
+            return load_key_file()
+
+        elif operation in ['encrypt', 'decrypt']:
+            key_file = request.files.get('key_file')
+            if not key_file:
+                return jsonify({"error": "Wymagany jest klucz"}), 400
+
+            key = key_file.read()
+            file = request.files.get('file')
+            if not file:
+                return jsonify({"error": "Wymagany jest plik"}), 400
+
+            file_data = file.read()
+            processed_data = xor_operation(file_data, key)
+
+            filename = 'Zaszyfrowany.txt' if operation == 'encrypt' else 'Odszyfrowany.txt'
+            return send_file(io.BytesIO(processed_data), download_name=filename, as_attachment=True)
+
+        else:
+            return jsonify({"error": "Nieprawidłowa operacja!"}), 400
 
     return render_template('index.html')
 
+def load_key_file():
+    try:
+        if 'key_file' not in request.files:
+            return jsonify({"error": "Wymagany jest klucz"}), 400
+
+        key_file = request.files['key_file']
+        if key_file.filename == '':
+            return jsonify({"error": "Wymagany jest plik"}), 400
+
+        key = key_file.read()
+        return jsonify({"message": "Wymagany jest klucz", "key": key.hex()})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
-     app.run(debug=True)
+    app.run(debug=True)

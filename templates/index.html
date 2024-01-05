@@ -9,6 +9,18 @@
         
         <h2>Projekt</h2>
 
+<!-- Formularz do generowania klucza -->
+
+        <h2>Generowanie</h2>
+        <form action="/" method="post">
+            <input type="hidden" name="operation" value="generate">
+            <h3>Wpisz klucz</h3>
+            <input type="text" name="key_string" placeholder="Wpisz klucz" required>
+            <h3>Podaj ścieżkę zapisu klucza</h3>
+            <input type="text" name="key_path" placeholder="klucz.txt">
+            <button type="submit">Generuj klucz</button>
+        </form>
+
 <!-- Formularz do szyfrowania plików -->
 
 
@@ -34,17 +46,7 @@
             <button type="submit">Deszyfruj plik</button>
         </form>
 
-<!-- Formularz do generowania klucza -->
 
-        <h2>Generowanie</h2>
-        <form action="/" method="post">
-            <input type="hidden" name="operation" value="generate">
-            <h3>Wpisz klucz</h3>
-            <input type="text" name="key_string" placeholder="Wpisz klucz" required>
-            <h3>Podaj ścieżkę zapisu klucza</h3>
-            <input type="text" name="key_path" placeholder="klucz.txt">
-            <button type="submit">Generuj klucz</button>
-        </form>
 
     </div>
 </body>

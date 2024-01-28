@@ -69,7 +69,7 @@ def load_key_file():
             return jsonify({"error": "Wymagany jest plik"}), 400
 
         key = key_file.read()
-        return jsonify({"message": "Wymagany jest klucz", "key": key.hex()})
+        return jsonify({"message": "Klucz został pomyślnie wczytany", "key": key.hex()})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
